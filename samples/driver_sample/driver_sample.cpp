@@ -211,7 +211,7 @@ HiddenAreaMesh_t CClientDriver_Sample::GetHiddenAreaMesh( EVREye eEye )
 
 //-----------------------------------------------------------------------------
 // Purpose:
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------- ITrackedDeviceServerDriver
 class CSampleDeviceDriver : public vr::ITrackedDeviceServerDriver, public vr::IVRDisplayComponent
 {
 public:
@@ -224,23 +224,75 @@ public:
 		if ( pSettings )
 		{
 			DriverLog( "Using settings values\n" );
-			m_flIPD = pSettings->GetFloat( k_pch_SteamVR_Section, k_pch_SteamVR_IPD_Float, 0.063f );
+			EVRSettingsError eError;
+			m_flIPD = pSettings->GetFloat( k_pch_SteamVR_Section, k_pch_SteamVR_IPD_Float, &eError );
+			if (eError != VRSettingsError_None)
+			{
+				m_flIPD = 0.065f;
+			}
 
 			char buf[1024];
-			pSettings->GetString( k_pch_Sample_Section, k_pch_Sample_SerialNumber_String, buf, sizeof(buf), "SAMPLE1234" );
+			pSettings->GetString(k_pch_Sample_Section, k_pch_Sample_SerialNumber_String, buf, sizeof(buf), &eError);
 			m_sSerialNumber = buf;
+			if (eError != VRSettingsError_None)
+			{
+				m_sSerialNumber = "SAMPLE1234";
+			}
 
-			pSettings->GetString( k_pch_Sample_Section, k_pch_Sample_ModelNumber_String, buf, sizeof(buf), "ED209" );
-			m_sSerialNumber = buf;
+			pSettings->GetString(k_pch_Sample_Section, k_pch_Sample_ModelNumber_String, buf, sizeof(buf), &eError);
+			m_sModelNumber = buf;
+			if (eError != VRSettingsError_None)
+			{
+				m_sModelNumber = "ED209";
+			}
 
-			m_nWindowX = pSettings->GetInt32( k_pch_Sample_Section, k_pch_Sample_WindowX_Int32, 0 );
-			m_nWindowY = pSettings->GetInt32( k_pch_Sample_Section, k_pch_Sample_WindowY_Int32, 0 );
-			m_nWindowWidth = pSettings->GetInt32( k_pch_Sample_Section, k_pch_Sample_WindowWidth_Int32, 1920 );
-			m_nWindowHeight = pSettings->GetInt32( k_pch_Sample_Section, k_pch_Sample_WindowHeight_Int32, 1080 );
-			m_nRenderWidth = pSettings->GetInt32( k_pch_Sample_Section, k_pch_Sample_RenderWidth_Int32, 1344 );
-			m_nRenderHeight = pSettings->GetInt32( k_pch_Sample_Section, k_pch_Sample_RenderHeight_Int32, 1512 );
-			m_flSecondsFromVsyncToPhotons = pSettings->GetFloat( k_pch_Sample_Section, k_pch_Sample_SecondsFromVsyncToPhotons_Float, 0.0 );
-			m_flDisplayFrequency = pSettings->GetFloat( k_pch_Sample_Section, k_pch_Sample_DisplayFrequency_Float, 0.0 );
+			m_nWindowX = pSettings->GetInt32(k_pch_Sample_Section, k_pch_Sample_WindowX_Int32, &eError);
+			if (eError != VRSettingsError_None)
+			{
+				m_nWindowX = 0;
+			}
+
+			m_nWindowY = pSettings->GetInt32(k_pch_Sample_Section, k_pch_Sample_WindowY_Int32, &eError);
+			if (eError != VRSettingsError_None)
+			{
+				m_nWindowY = 0;
+			}
+
+			m_nWindowWidth = pSettings->GetInt32(k_pch_Sample_Section, k_pch_Sample_WindowWidth_Int32, &eError);
+			if (eError != VRSettingsError_None)
+			{
+				m_nWindowWidth = 1920;
+			}
+
+			m_nWindowHeight = pSettings->GetInt32(k_pch_Sample_Section, k_pch_Sample_WindowHeight_Int32, &eError);
+			if (eError != VRSettingsError_None)
+			{
+				m_nWindowHeight = 1080;
+			}
+
+			m_nRenderWidth = pSettings->GetInt32(k_pch_Sample_Section, k_pch_Sample_RenderWidth_Int32, &eError);
+			if (eError != VRSettingsError_None)
+			{
+				m_nRenderWidth = 1344;
+			}
+
+			m_nRenderHeight = pSettings->GetInt32(k_pch_Sample_Section, k_pch_Sample_RenderHeight_Int32, &eError);
+			if (eError != VRSettingsError_None)
+			{
+				m_nRenderHeight = 1512;
+			}
+
+			m_flSecondsFromVsyncToPhotons = pSettings->GetFloat(k_pch_Sample_Section, k_pch_Sample_SecondsFromVsyncToPhotons_Float, &eError);
+			if (eError != VRSettingsError_None)
+			{
+				m_flSecondsFromVsyncToPhotons = 0.0;
+			}
+
+			m_flDisplayFrequency = pSettings->GetFloat(k_pch_Sample_Section, k_pch_Sample_DisplayFrequency_Float, &eError);
+			if (eError != VRSettingsError_None)
+			{
+				m_flDisplayFrequency = 0.0;
+			}
 		}
 		else
 		{
@@ -261,13 +313,13 @@ public:
 			m_flDisplayFrequency = 0.0;
 		}
 
-		DriverLog( "driver_null: Serial Number: %s\n", m_sSerialNumber.c_str() );
-		DriverLog( "driver_null: Model Number: %s\n", m_sModelNumber.c_str() );
-		DriverLog( "driver_null: Window: %d %d %d %d\n", m_nWindowX, m_nWindowY, m_nWindowWidth, m_nWindowHeight );
-		DriverLog( "driver_null: Render Target: %d %d\n", m_nRenderWidth, m_nRenderHeight );
-		DriverLog( "driver_null: Seconds from Vsync to Photons: %f\n", m_flSecondsFromVsyncToPhotons );
-		DriverLog( "driver_null: Display Frequency: %f\n", m_flDisplayFrequency );
-		DriverLog( "driver_null: IPD: %f\n", m_flIPD );
+		DriverLog( "driver_sample: Serial Number: %s\n", m_sSerialNumber.c_str() );
+		DriverLog( "driver_sample: Model Number: %s\n", m_sModelNumber.c_str() );
+		DriverLog( "driver_sample: Window: %d %d %d %d\n", m_nWindowX, m_nWindowY, m_nWindowWidth, m_nWindowHeight );
+		DriverLog( "driver_sample: Render Target: %d %d\n", m_nRenderWidth, m_nRenderHeight );
+		DriverLog( "driver_sample: Seconds from Vsync to Photons: %f\n", m_flSecondsFromVsyncToPhotons );
+		DriverLog( "driver_sample: Display Frequency: %f\n", m_flDisplayFrequency );
+		DriverLog( "driver_sample: IPD: %f\n", m_flIPD );
 	}
 
 	virtual ~CSampleDeviceDriver()
@@ -285,6 +337,11 @@ public:
 	virtual void Deactivate() 
 	{
 		m_unObjectId = vr::k_unTrackedDeviceIndexInvalid;
+	}
+
+	virtual void EnterStandby()
+	{
+		// do nothing for now
 	}
 
 	void *GetComponent( const char *pchComponentNameAndVersion )
@@ -555,7 +612,7 @@ class CServerDriver_Sample: public IServerTrackedDeviceProvider
 public:
 	CServerDriver_Sample()
 		: m_pNullHmdLatest( NULL )
-		, m_bEnableNullDriver( false )
+		, m_bEnableSampleDriver( false )
 	{
 	}
 
@@ -573,7 +630,7 @@ public:
 private:
 	CSampleDeviceDriver *m_pNullHmdLatest;
 	
-	bool m_bEnableNullDriver;
+	bool m_bEnableSampleDriver;
 };
 
 CServerDriver_Sample g_serverDriverNull;
@@ -585,9 +642,14 @@ EVRInitError CServerDriver_Sample::Init( IDriverLog *pDriverLog, vr::IServerDriv
 
 	IVRSettings *pSettings = pDriverHost ? pDriverHost->GetSettings( vr::IVRSettings_Version ) : NULL;
 
-	m_bEnableNullDriver = pSettings && pSettings->GetBool( k_pch_Sample_Section, k_pch_Sample_EnableSampleDriver_Bool, false );
+	EVRSettingsError eError;
+	m_bEnableSampleDriver = pSettings && pSettings->GetBool(k_pch_Sample_Section, k_pch_Sample_EnableSampleDriver_Bool, &eError);
+	if (eError != VRSettingsError_None)
+	{
+		m_bEnableSampleDriver = false;
+	}
 
-	if ( !m_bEnableNullDriver )
+	if ( !m_bEnableSampleDriver )
 		return VRInitError_Init_HmdNotFound;
 
 	m_pNullHmdLatest = new CSampleDeviceDriver( pDriverHost);
@@ -604,7 +666,7 @@ void CServerDriver_Sample::Cleanup()
 
 uint32_t CServerDriver_Sample::GetTrackedDeviceCount()
 {
-	if ( m_bEnableNullDriver )
+	if ( m_bEnableSampleDriver )
 		return 1;
 
 	return 0;
